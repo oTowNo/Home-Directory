@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directions to Tuition Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: drift 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .slides-container {
+            width: 100%;
+            max-width: 500px;
+            perspective: 1000px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+            min-height: 500px;
+            display: none;
+            animation: slideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+            transform: rotate(45deg);
+            pointer-events: none;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        h2 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #ffd89b, #19547b);
+        }
+
+        .directions-step {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .directions-step:hover {
+            transform: translateX(10px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .directions-step > strong {
+            color: #667eea;
+            font-size: 1.05em;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .directions-step p {
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .directions-step p strong {
+            color: #000000;
+            font-weight: 700;
+            display: inline;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: auto;
+            border: none;
+            background: none;
+            padding: 10px 0;
+            margin: 10px 0;
+        }
+
+        .image-placeholder img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            color: #667eea;
+            font-weight: 700;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            font-size: 1em;
+        }
+
+        .slide-theme-location {
+            background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+        }
+
+        @media (max-width: 400px) {
+            .slide {
+                padding: 20px;
+            }
+            
+            h2 {
+                font-size: 1.3em;
+            }
+
+            .directions-step p {
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slides-container">
+        <!-- Slide 1: Directions Part 1 -->
+        <div class="slide active slide-theme-location">
+            <h2>🚶 Directions (1/3)</h2>
+            
+            <div class="directions-step">
+                <strong>Step 1: Exit Woodlands MRT</strong>
+                <p>From <strong>Woodlands MRT (NS line)</strong>, head towards <strong>Exit 1 (Ave 3)</strong>. Walk straight upon exiting.</p>
+                <div class="image-placeholder">
+                    <img src="Picture1.png">
+                </div>
+            </div>
+
+            <div class="directions-step">
+                <strong>Step 2: Walk Around Causeway Point</strong>
+                <p>Walk around the outskirt of <strong>Causeway Point</strong> until you see a <strong>traffic road</strong>. Cross the road.</p>
+                <div class="image-placeholder">
+                    <img src="Picture2.png">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Directions Part 2 -->
+        <div class="slide slide-theme-location">
+            <h2>🚶 Directions (2/3)</h2>
+            
+            <div class="directions-step">
+                <strong>Step 3: Walk on Left Pavement</strong>
+                <p>Upon crossing, walk on the <strong>left pavement</strong> all the way until you see a <strong>T-junction</strong>.</p>
+                <div class="image-placeholder">
+                    <img src="Picture3.png">
+                </div>
+            </div>
+
+            <div class="directions-step">
+                <strong>Step 4: Cross the T-Junction</strong>
+                <p>Once you see the <strong>T-junction road</strong>, cross the road.</p>
+                <div class="image-placeholder">
+                    <img src="Picture4.png">
+                    <img src="Picture5.png">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Directions Part 3 -->
+        <div class="slide slide-theme-location">
+            <h2>🚶 Directions (3/3)</h2>
+            
+            <div class="directions-step">
+                <strong>Step 5-6: Pass Through Block 361</strong>
+                <p>Pass through <strong>Block 361</strong> until you see a <strong>playground</strong> on the other side. Walk through the <strong>left pavement</strong> beside the playground until you see the road.</p>
+                <div class="image-placeholder">
+                    <img src="Picture6.png">
+                </div>
+            </div>
+
+            <div class="directions-step">
+                <strong>Step 7-8: Almost There!</strong>
+                <p>Cross the road. You'll see a minimart <strong>Yeo Express</strong> at <strong>Block 354</strong>. Pass through the block - you'll see another <strong>playground</strong> and a <strong>court</strong>. <strong>Block 351</strong> will be visible on the right side of the playground.</p>
+                <div class="image-placeholder">
+                    <img src="Picture7.png">
+                    <img src="Picture8.png">
+                </div>
+            </div>
+
+            <div class="directions-step">
+                <strong>Final Step: You've Arrived! 🎉</strong>
+                <p>Enter <strong>Block 351</strong>, take the lift to <strong>7th floor</strong>, turn <strong>left</strong> to <strong>#07-733!</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">← Prev</button>
+        <div class="slide-counter"><span id="slideNum">1</span> / 3</div>
+        <button id="nextBtn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function changeSlide(direction) {
+            currentSlide += direction;
+            showSlide(currentSlide);
+            setTimeout(() => {
+                const activeSlide = document.querySelector('.slide.active');
+                if (activeSlide) {
+                    const slideTop = activeSlide.getBoundingClientRect().top + window.pageYOffset;
+                    window.scrollTo({ top: slideTop - 50, behavior: 'smooth' });
+                }
+            }, 50);
+        }
+        
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            if (n >= slides.length) currentSlide = slides.length - 1;
+            if (n < 0) currentSlide = 0;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('slideNum').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === slides.length - 1;
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+        
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>
